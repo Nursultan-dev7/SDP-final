@@ -1,11 +1,11 @@
 package wallet.decorator;
 
-import wallet.builder.Transaction;
-
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;
+
+import wallet.builder.Transaction;
 
 public final class DemoAuthenticator implements TransferAuthenticator {
     public static final String DEMO_PIN = "2468";

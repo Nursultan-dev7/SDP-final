@@ -1,13 +1,5 @@
 package wallet.facade;
 
-import wallet.builder.Transaction;
-import wallet.strategy.FeeStrategy;
-import wallet.strategy.StandardFeeStrategy;
-import wallet.strategy.PriorityFeeStrategy;
-import wallet.decorator.DemoAuthenticator;
-import wallet.adapter.WalletNetwork;
-import wallet.observer.TransactionHistory;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -32,6 +24,14 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
+import wallet.decorator.DemoAuthenticator;
+import wallet.observer.TransactionHistory;
+import wallet.strategy.FeeStrategy;
+import wallet.strategy.PriorityFeeStrategy;
+import wallet.strategy.StandardFeeStrategy;
 
 @SuppressWarnings("serial")
 public final class WalletPanel extends JPanel {

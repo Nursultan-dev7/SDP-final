@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.util.Arrays;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
 import wallet.adapter.LocalChainAdapter;
 import wallet.adapter.LocalChainNode;
 import wallet.decorator.DemoAuthenticator;

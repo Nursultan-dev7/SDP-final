@@ -1,6 +1,5 @@
 package wallet.adapter;
 
-
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

@@ -30,3 +30,24 @@ with zipfile.ZipFile(root / "build" / "BlockchainWallet.jar") as jar:
     assert {name for name in jar.namelist() if name.endswith(".class") and name.count("/") == 1} == {"wallet/Main.class"}
     assert {name.split("/")[1] for name in jar.namelist() if name.endswith(".class") and name.count("/") > 1} == patterns
 print("PASS: exactly six pattern packages, one top-level class per file, only Main outside them, matching JAR layout.")
+
+# The submitted ZIP must contain the same implementation and report as this checkout.
+with zipfile.ZipFile(root / "Blockchain Wallet - Source Code.zip") as archive:
+    assert archive.testzip() is None
+    prefix = "Blockchain Wallet/"
+    expected_java = {prefix + path.relative_to(root).as_posix()
+                     for tree in (root / "src", root / "tests") for path in tree.rglob("*.java")}
+    assert {name for name in archive.namelist() if name.endswith(".java")} == expected_java
+    text_types = {".java", ".md", ".py", ".puml", ".yml", ".sh", ".ps1", ".cmd", ".txt"}
+    for entry in archive.infolist():
+        assert entry.filename.startswith(prefix), entry.filename
+        relative = Path(entry.filename[len(prefix):])
+        assert not relative.is_absolute() and ".." not in relative.parts, entry.filename
+        assert not {".git", "build", "work", "output"}.intersection(relative.parts), entry.filename
+        expected = (root / relative).read_bytes()
+        actual = archive.read(entry)
+        if relative.suffix in text_types or relative.name in {".gitignore", ".gitattributes"}:
+            actual = actual.replace(b"\r\n", b"\n")
+            expected = expected.replace(b"\r\n", b"\n")
+        assert actual == expected, f"Stale source archive entry: {relative}"
+print("PASS: submitted ZIP matches current source, documentation and PDF; no stale wallet classes.")

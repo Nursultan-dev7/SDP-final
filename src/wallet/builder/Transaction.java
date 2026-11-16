@@ -1,6 +1,5 @@
 package wallet.builder;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
@@ -35,5 +34,4 @@ public record Transaction(UUID id, String sender, String recipient, BigDecimal a
     public BigDecimal total() {
         return amount.add(fee);
     }
-
 }

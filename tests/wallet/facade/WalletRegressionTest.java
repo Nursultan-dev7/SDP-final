@@ -1,16 +1,5 @@
 package wallet.facade;
 
-import wallet.adapter.LocalChainAdapter;
-import wallet.adapter.LocalChainNode;
-import wallet.adapter.WalletNetwork;
-import wallet.builder.Transaction;
-import wallet.builder.TransactionBuilder;
-import wallet.decorator.DemoAuthenticator;
-import wallet.observer.TransactionHistory;
-import wallet.strategy.FeeStrategy;
-import wallet.strategy.StandardFeeStrategy;
-import wallet.strategy.PriorityFeeStrategy;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -20,6 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+
+import wallet.adapter.LocalChainAdapter;
+import wallet.adapter.LocalChainNode;
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
+import wallet.builder.TransactionBuilder;
+import wallet.decorator.DemoAuthenticator;
+import wallet.observer.TransactionHistory;
+import wallet.strategy.FeeStrategy;
+import wallet.strategy.PriorityFeeStrategy;
+import wallet.strategy.StandardFeeStrategy;
 
 /** Regression checks for domain boundaries and failures in the confirmation flow. */
 public final class WalletRegressionTest {
@@ -56,7 +56,9 @@ public final class WalletRegressionTest {
 
     private static void authenticationBoundaries() {
         MutableClock clock = new MutableClock();
-        WalletFacade wallet = new WalletFacade(new LocalChainAdapter(new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT)), new DemoAuthenticator(clock));
+        WalletFacade wallet = new WalletFacade(
+                new LocalChainAdapter(new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT)),
+                new DemoAuthenticator(clock));
         FeeStrategy fees = new StandardFeeStrategy();
         WalletFacade.PreparedTransfer expired = wallet.prepare(WalletFacade.RECIPIENT, "10", fees);
         clock.advance(120);

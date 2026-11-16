@@ -1,16 +1,5 @@
 package wallet.facade;
 
-import wallet.adapter.LocalChainAdapter;
-import wallet.adapter.LocalChainNode;
-import wallet.adapter.WalletNetwork;
-import wallet.builder.Transaction;
-import wallet.builder.TransactionBuilder;
-import wallet.decorator.DemoAuthenticator;
-import wallet.observer.TransactionHistory;
-import wallet.strategy.FeeStrategy;
-import wallet.strategy.StandardFeeStrategy;
-import wallet.strategy.PriorityFeeStrategy;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics2D;
@@ -27,6 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import wallet.adapter.LocalChainAdapter;
+import wallet.adapter.LocalChainNode;
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
+import wallet.decorator.DemoAuthenticator;
+import wallet.observer.TransactionHistory;
+import wallet.strategy.FeeStrategy;
+import wallet.strategy.PriorityFeeStrategy;
+import wallet.strategy.StandardFeeStrategy;
 
 public final class WalletSmokeTest {
     private WalletSmokeTest() {}
@@ -103,7 +102,9 @@ public final class WalletSmokeTest {
     }
 
     private static void exerciseInterface(Path screenshots) {
-        WalletPanel panel = new WalletPanel(new WalletFacade(new LocalChainAdapter(new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT)), new DemoAuthenticator(Clock.systemUTC())));
+        WalletPanel panel = new WalletPanel(new WalletFacade(
+                new LocalChainAdapter(new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT)),
+                new DemoAuthenticator(Clock.systemUTC())));
         panel.setSize(panel.getPreferredSize());
         JTable history = (JTable) component(panel, "history");
         JButton mine = (JButton) component(panel, "create-block");

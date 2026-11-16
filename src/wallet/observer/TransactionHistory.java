@@ -1,12 +1,12 @@
 package wallet.observer;
 
-import wallet.builder.Transaction;
-import wallet.adapter.WalletNetwork;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
 
 public final class TransactionHistory {
     public record Entry(Transaction transaction, WalletNetwork.Receipt receipt) {}

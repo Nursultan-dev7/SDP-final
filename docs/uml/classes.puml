@@ -1,0 +1,95 @@
+@startuml
+skinparam classAttributeIconSize 0
+class "wallet.Main" as Main {
+  {static} main(args)
+}
+package "wallet.builder" {
+  class Transaction <<record>>
+  class TransactionBuilder {
+    recipient(address): TransactionBuilder
+    amount(amount): TransactionBuilder
+    fee(fee): TransactionBuilder
+    build(): Transaction
+  }
+}
+package "wallet.strategy" {
+  interface FeeStrategy {
+    calculate(amount): BigDecimal
+  }
+  class StandardFeeStrategy
+  class PriorityFeeStrategy
+}
+package "wallet.decorator" {
+  interface TransferSender {
+    send(transaction, credentials): Receipt
+  }
+  class NetworkSender <<record>>
+  class AuthenticatedSender <<record>>
+  interface TransferAuthenticator {
+    issue(transaction): String
+    verify(transaction, credentials)
+    cancel(transaction)
+  }
+  class DemoAuthenticator
+}
+package "wallet.adapter" {
+  interface WalletNetwork {
+    confirmed(address): BigDecimal
+    available(address): BigDecimal
+    validate(transaction)
+    broadcast(transaction): Receipt
+    onConfirmation(listener)
+    createBlock(): BlockSummary
+  }
+  class LocalChainAdapter
+  class LocalChainNode {
+    broadcast(payment): Receipt
+    onIncluded(listener)
+    mine(): Block
+  }
+}
+package "wallet.observer" {
+  class TransactionHistory {
+    recordSubmission(transaction, receipt)
+    onConfirmation(receipt)
+    entries(): List
+  }
+}
+package "wallet.facade" {
+  class WalletPanel
+  class WalletFacade {
+    prepare(recipient, amount, strategy)
+    submit(transfer, pin, code)
+    createBlock()
+  }
+  class WalletSmokeTest <<test>>
+  class WalletRegressionTest <<test>>
+}
+Main ..> WalletFacade : constructs
+Main ..> LocalChainAdapter : constructs
+Main ..> LocalChainNode : constructs
+Main ..> DemoAuthenticator : constructs
+Main ..> WalletPanel : opens
+Main ..> WalletSmokeTest : --test
+Main ..> WalletRegressionTest : --test
+WalletPanel --> WalletFacade
+WalletFacade --> WalletNetwork
+WalletFacade --> TransferAuthenticator
+WalletFacade --> TransferSender
+WalletFacade --> TransactionHistory
+WalletFacade ..> FeeStrategy
+WalletFacade ..> TransactionBuilder
+TransactionBuilder ..> Transaction : constructs
+StandardFeeStrategy ..|> FeeStrategy
+PriorityFeeStrategy ..|> FeeStrategy
+AuthenticatedSender ..|> TransferSender
+NetworkSender ..|> TransferSender
+AuthenticatedSender --> TransferSender : delegate
+AuthenticatedSender --> TransferAuthenticator
+DemoAuthenticator ..|> TransferAuthenticator
+NetworkSender --> WalletNetwork
+LocalChainAdapter ..|> WalletNetwork
+LocalChainAdapter --> LocalChainNode
+LocalChainNode ..> LocalChainAdapter : inclusion callback
+LocalChainAdapter ..> TransactionHistory : translated callback
+@enduml

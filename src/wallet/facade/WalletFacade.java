@@ -1,18 +1,18 @@
 package wallet.facade;
 
-import wallet.builder.Transaction;
-import wallet.builder.TransactionBuilder;
-import wallet.strategy.FeeStrategy;
-import wallet.decorator.TransferAuthenticator;
-import wallet.decorator.TransferSender;
-import wallet.decorator.AuthenticatedSender;
-import wallet.decorator.NetworkSender;
-import wallet.adapter.WalletNetwork;
-import wallet.observer.TransactionHistory;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
+import wallet.builder.TransactionBuilder;
+import wallet.decorator.AuthenticatedSender;
+import wallet.decorator.NetworkSender;
+import wallet.decorator.TransferAuthenticator;
+import wallet.decorator.TransferSender;
+import wallet.observer.TransactionHistory;
+import wallet.strategy.FeeStrategy;
 
 public final class WalletFacade {
     public static final String SENDER = "demo-alice";
