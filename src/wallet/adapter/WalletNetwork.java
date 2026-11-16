@@ -1,10 +1,12 @@
-package wallet;
+package wallet.adapter;
+
+import wallet.builder.Transaction;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-interface WalletNetwork {
+public interface WalletNetwork {
     enum Status {
         PENDING("Pending"), CONFIRMED("Confirmed");
 
@@ -14,7 +16,7 @@ interface WalletNetwork {
             this.label = label;
         }
 
-        String label() {
+        public String label() {
             return label;
         }
     }

@@ -1,4 +1,12 @@
-package wallet;
+package wallet.facade;
+
+import wallet.builder.Transaction;
+import wallet.strategy.FeeStrategy;
+import wallet.strategy.StandardFeeStrategy;
+import wallet.strategy.PriorityFeeStrategy;
+import wallet.decorator.DemoAuthenticator;
+import wallet.adapter.WalletNetwork;
+import wallet.observer.TransactionHistory;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -9,7 +17,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,7 +34,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
-final class WalletPanel extends JPanel {
+public final class WalletPanel extends JPanel {
     private static final Color INK = new Color(0x152B3C);
     private static final Color MUTED = new Color(0x496174);
     private static final Color BACKGROUND = new Color(0xEFF4F7);
@@ -36,8 +43,8 @@ final class WalletPanel extends JPanel {
     private static final Color ERROR = new Color(0x9C2630);
 
     private enum FeeOption {
-        STANDARD("Standard", new FeeStrategy.Standard()),
-        PRIORITY("Priority", new FeeStrategy.Priority());
+        STANDARD("Standard", new StandardFeeStrategy()),
+        PRIORITY("Priority", new PriorityFeeStrategy());
 
         private final String label;
         private final FeeStrategy strategy;
@@ -80,7 +87,7 @@ final class WalletPanel extends JPanel {
     private final JButton createBlock = button("Create block", true, "create-block", this::mine);
     private WalletFacade.PreparedTransfer prepared;
 
-    WalletPanel(WalletFacade wallet) {
+    public WalletPanel(WalletFacade wallet) {
         super(new BorderLayout());
         this.wallet = wallet;
         setPreferredSize(new Dimension(1080, 720));

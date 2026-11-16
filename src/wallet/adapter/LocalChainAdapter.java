@@ -1,13 +1,15 @@
-package wallet;
+package wallet.adapter;
+
+import wallet.builder.Transaction;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-final class LocalChainAdapter implements WalletNetwork {
+public final class LocalChainAdapter implements WalletNetwork {
     private final LocalChainNode node;
 
-    LocalChainAdapter(LocalChainNode node) {
+    public LocalChainAdapter(LocalChainNode node) {
         this.node = node;
     }
 
