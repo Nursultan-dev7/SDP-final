@@ -1,15 +1,16 @@
-package wallet;
+package wallet.decorator;
 
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;
 
-final class DemoAuthenticator {
-    static final String DEMO_PIN = "2468";
+import wallet.builder.Transaction;
+
+public final class DemoAuthenticator implements TransferAuthenticator {
+    public static final String DEMO_PIN = "2468";
     private static final int MAX_ATTEMPTS = 3;
 
-    record Credentials(String pin, String code) {}
     private record Challenge(Transaction transaction, String code, Instant expiresAt) {}
 
     private final Clock clock;
@@ -17,18 +18,20 @@ final class DemoAuthenticator {
     private Challenge active;
     private int attempts;
 
-    DemoAuthenticator(Clock clock) {
+    public DemoAuthenticator(Clock clock) {
         this.clock = clock;
     }
 
-    String issue(Transaction transaction) {
+    @Override
+    public String issue(Transaction transaction) {
         String code = String.format(Locale.ROOT, "%06d", random.nextInt(1_000_000));
         active = new Challenge(transaction, code, clock.instant().plusSeconds(120));
         attempts = 0;
         return code;
     }
 
-    void verify(Transaction transaction, Credentials credentials) {
+    @Override
+    public void verify(Transaction transaction, Credentials credentials) {
         if (active == null || !active.transaction().equals(transaction)) {
             throw new IllegalArgumentException("Review the transfer again to get a new code.");
         }
@@ -47,7 +50,8 @@ final class DemoAuthenticator {
         active = null;
     }
 
-    void cancel(Transaction transaction) {
+    @Override
+    public void cancel(Transaction transaction) {
         if (active != null && active.transaction().equals(transaction)) {
             active = null;
         }

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-if not exist build\test-classes mkdir build\test-classes
-javac --release 17 -encoding UTF-8 -Xlint:all -d build\test-classes src\wallet\*.java tests\wallet\*.java
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0build.ps1"
 if errorlevel 1 exit /b 1
-java -Djava.awt.headless=true -cp build\test-classes wallet.WalletSmokeTest %*
+java -jar build\BlockchainWallet.jar --test %*
+exit /b %errorlevel%

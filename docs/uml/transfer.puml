@@ -1,0 +1,57 @@
+@startuml
+actor Student
+participant WalletPanel as UI
+participant WalletFacade as Facade
+participant FeeStrategy as Strategy
+participant "TransactionBuilder" as Builder
+participant TransferAuthenticator as Auth
+participant AuthenticatedSender as Decorator
+participant NetworkSender as Sender
+participant LocalChainAdapter as Adapter
+participant LocalChainNode as Node
+participant TransactionHistory as History
+note over Facade,History
+  During construction: Facade subscribes history::onConfirmation through Adapter.
+end note
+Student -> UI: Review transfer
+UI -> Facade: prepare(recipient, inputAmount, strategy)
+Facade -> Strategy: calculate(amount)
+Strategy --> Facade: fee
+Facade -> Builder: recipient(...).amount(...).fee(...).build()
+Builder --> Facade: validated immutable Transaction
+Facade -> Adapter: validate(transaction)
+Adapter -> Node: validate(payment in minor units)
+Facade -> Auth: issue(transaction)
+Auth --> Facade: demo code
+Facade --> UI: PreparedTransfer
+Student -> UI: Authorize & send
+UI -> Facade: submit(transfer, pin, code)
+Facade -> Decorator: send(transaction, credentials)
+Decorator -> Auth: verify(transaction, credentials)
+alt invalid, expired or used credentials
+  Auth --> UI: IllegalArgumentException via call stack
+else valid credentials
+  Decorator -> Sender: send(transaction, credentials)
+  Sender -> Adapter: broadcast(transaction)
+  Adapter -> Node: broadcast(payment)
+  Node --> Adapter: numeric IN_POOL receipt
+  Adapter --> Facade: PENDING receipt via senders
+  Facade -> History: recordSubmission(transaction, receipt)
+  Facade --> UI: PENDING receipt
+end
+Student -> UI: Create block
+UI -> Facade: createBlock()
+Facade -> Adapter: createBlock()
+Adapter -> Node: mine()
+Node -> Node: sort payments, commit balances and linked block
+loop each confirmation and subscriber
+  Node -> Adapter: included receipt callback
+  Adapter -> History: onConfirmation(translated receipt)
+  note right of Node: Subscriber failures are logged; delivery continues.
+end
+Node --> Adapter: Block
+Adapter --> Facade: BlockSummary
+Facade --> UI: BlockSummary
+UI -> Facade: balances(), history()
+Facade --> UI: confirmed balances and updated history
+@enduml

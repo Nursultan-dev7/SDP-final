@@ -1,4 +1,4 @@
-package wallet;
+package wallet.facade;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -17,6 +17,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import wallet.adapter.LocalChainAdapter;
+import wallet.adapter.LocalChainNode;
+import wallet.adapter.WalletNetwork;
+import wallet.builder.Transaction;
+import wallet.decorator.DemoAuthenticator;
+import wallet.observer.TransactionHistory;
+import wallet.strategy.FeeStrategy;
+import wallet.strategy.PriorityFeeStrategy;
+import wallet.strategy.StandardFeeStrategy;
+
 public final class WalletSmokeTest {
     private WalletSmokeTest() {}
 
@@ -29,9 +39,9 @@ public final class WalletSmokeTest {
 
     private static void transferLifecycle() {
         LocalChainNode node = new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT);
-        WalletFacade wallet = new WalletFacade(new LocalChainAdapter(node), Clock.systemUTC());
-        FeeStrategy standard = new FeeStrategy.Standard();
-        FeeStrategy priority = new FeeStrategy.Priority();
+        WalletFacade wallet = new WalletFacade(new LocalChainAdapter(node), new DemoAuthenticator(Clock.systemUTC()));
+        FeeStrategy standard = new StandardFeeStrategy();
+        FeeStrategy priority = new PriorityFeeStrategy();
         expect("100.00", wallet.balances().available().toPlainString());
         reject("positive amount", () -> wallet.prepare(WalletFacade.RECIPIENT, "0", standard));
         reject("Enter an amount", () -> wallet.prepare(WalletFacade.RECIPIENT, "1.001", standard));
@@ -92,7 +102,9 @@ public final class WalletSmokeTest {
     }
 
     private static void exerciseInterface(Path screenshots) {
-        WalletPanel panel = new WalletPanel(new WalletFacade(Clock.systemUTC()));
+        WalletPanel panel = new WalletPanel(new WalletFacade(
+                new LocalChainAdapter(new LocalChainNode(WalletFacade.SENDER, WalletFacade.RECIPIENT)),
+                new DemoAuthenticator(Clock.systemUTC())));
         panel.setSize(panel.getPreferredSize());
         JTable history = (JTable) component(panel, "history");
         JButton mine = (JButton) component(panel, "create-block");
