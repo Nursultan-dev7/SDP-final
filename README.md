@@ -53,7 +53,7 @@ src/wallet/
 
 There are **six pattern packages**, with `Main` as the sole class outside them in the parent `wallet` package. Every top-level type has its own matching source file. Supporting UI classes belong to `wallet.facade`; authorization helpers belong to `wallet.decorator`; the local adaptee belongs to `wallet.adapter`. The test sources are in `tests/wallet/facade`, using the existing package.
 
-Run `python docs/verify_structure.py` after a build. It verifies package names and source paths, one top-level type per file, Main as the only outside class, and the actual executable JAR hierarchy. GitHub CI runs these checks with both test suites on Java 17 and 21 under Windows and Linux.
+Run `python docs/verify_structure.py` after a build. It verifies package names and source paths, one top-level type per file, Main as the only outside class, the executable JAR hierarchy, and the current submission ZIP. When starting from an extracted source ZIP, first run `python docs/package_source.py` to recreate that archive; it is deliberately excluded from its own contents. GitHub CI runs these checks with both test suites on Java 17 and 21 under Windows and Linux.
 
 ## Six working patterns
 
